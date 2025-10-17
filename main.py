@@ -5,7 +5,7 @@ from astrbot.api.event.message_event import AstrMessageEvent
 import os
 import random
 
-@register("meme_sticker", "Meme 表情包合集", "发送 fufu/loopy/cheems/konata 获取随机表情", "1.1")
+@register("meme_sticker", "知鱼", "超多表情包插件", "1.0")
 class MemeStickerPlugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
