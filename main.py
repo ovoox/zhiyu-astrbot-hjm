@@ -11,7 +11,7 @@ class MyPlugin(Star):
         super().__init__(context)
         self.api_url = "http://api.ocoa.cn/api/hjm.php?type=voice"
 
-    @filter.regex(r".*随机音乐.*")
+    @filter.regex(r".*哈基米.*")
     async def wsde_handler(self, message: AstrMessageEvent):
         temp_path = None
         try:
