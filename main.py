@@ -1,40 +1,37 @@
+from astrbot.api.all import *
 from astrbot.api.event import filter, AstrMessageEvent
-from astrbot.api.star import Context, Star, register
-from astrbot.api.message_components import Plain, Video 
 import aiohttp
-import json
+import tempfile
+import os
 
-@register("beauty_video", "美女视频", "获取美女视频的插件", "1.0")
-class BeautyVideoPlugin(Star):
+
+@register("astrbot_hjm", "知鱼", "随机一首哈基米语音", "1.0")
+class MyPlugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
-        self.api_url = "http://api.ocoa.cn/api/mvsp.php"
-        self.session = aiohttp.ClientSession()
-        
-    async def terminate(self):
-        await self.session.close()
-        
-    @filter.regex(r"^[/]?(美女视频|看美女)$")
-    async def get_beauty_video(self, event: AstrMessageEvent):
-        try:
-            async with self.session.get(self.api_url) as response:
-                if response.status == 200:
-                    # 解析返回的JSON数据
-                    data = await response.json()
-                    
-                    # 从JSON中获取视频URL
-                    if "url" in data:
-                        video_url = data["url"]
-                        # 创建视频组件并发送
-                        video_component = Video.fromURL(video_url)
-                        yield event.chain_result([video_component])
-                    else:
-                        yield event.plain_result("获取视频链接失败")
-                else:
-                    yield event.plain_result("获取视频失败 请稍后重试")
+        self.api_url = "http://api.ocoa.cn/api/hjm.php?type=voice"
 
-        except json.JSONDecodeError:
-            yield event.plain_result("解析视频数据失败")
+    @filter.regex(r".*随机音乐.*")
+    async def wsde_handler(self, message: AstrMessageEvent):
+        temp_path = None
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(self.api_url) as response:
+                    if response.status == 200:
+                        with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as temp_file:
+                            temp_path = temp_file.name
+                            audio_content = await response.read()
+                            temp_file.write(audio_content)
+                        
+                        chain = [Record.fromFileSystem(temp_path)]
+                        yield message.chain_result(chain)
+                    else:
+                        yield message.plain_result("获取哈基米语音失败 请稍后重试")
         except Exception as e:
-            print(f"视频异常: {e}")
-            yield event.plain_result("视频异常 请稍后重试")
+            yield message.plain_result(f"获取语音时出错：{str(e)}")
+        finally:
+            if temp_path and os.path.exists(temp_path):
+                try:
+                    os.remove(temp_path)
+                except:
+                    pass
