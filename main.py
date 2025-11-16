@@ -9,7 +9,7 @@ import os
 class MyPlugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
-        self.api_url = "http://api.ocoa.cn/api/hjm.php?type=voice"
+        self.api_url = "http://api.ocoa.cn/api/hjm.php?type=audio"
 
     @filter.regex(r".*哈基米.*")
     async def wsde_handler(self, message: AstrMessageEvent):
