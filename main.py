@@ -5,7 +5,7 @@ import tempfile
 import os
 
 
-@register("astrbot_hjm", "知鱼", "随机一首哈基米语音", "1.0")
+@register("astrbot_hjm", "知鱼", "随机一首哈基米语音", "2.0")
 class MyPlugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
